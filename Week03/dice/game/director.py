@@ -34,6 +34,12 @@ class Director:
         Args:
             self (Director): an instance of Director.
         """
+        print("\nRoll the dice and get points for every 1 or 5 you roll.")
+        print("50 points when you roll a 5")
+        print("100 points when you roll a 1")
+        print("The game ends when you don't roll either a 1 or 5.")
+        print("Good Luck!\n")
+
         while self.is_playing:
             self.get_inputs()
             self.do_updates()
@@ -47,6 +53,9 @@ class Director:
         """
         roll_dice = input("Roll dice? [y/n] ")
         self.is_playing = (roll_dice == "y")
+
+        if roll_dice == "n":
+            print("\nGreat score. Thanks for playing!\n")
        
     def do_updates(self):
         """Updates the player's score.
@@ -55,8 +64,9 @@ class Director:
             self (Director): An instance of Director.
         """
         if not self.is_playing:
-            return 
+            return
 
+        self.score = 0
         for i in range(len(self.dice)):
             die = self.dice[i]
             die.roll()
@@ -71,7 +81,7 @@ class Director:
         """
         if not self.is_playing:
             return
-        
+
         values = ""
         for i in range(len(self.dice)):
             die = self.dice[i]
@@ -79,4 +89,7 @@ class Director:
 
         print(f"You rolled: {values}")
         print(f"Your score is: {self.total_score}\n")
-        self.is_playing == (self.score > 0)
+        self.is_playing = (self.score > 0)
+
+        if self.score == 0:
+            print("No 1 or 5 was rolled. Game Over. Thanks for playing!\n")
