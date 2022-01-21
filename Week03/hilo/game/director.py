@@ -1,4 +1,4 @@
-from game.hilo import Hilo
+from game.hilo import Cards
 
 
 class Director:
@@ -7,10 +7,10 @@ class Director:
     The responsibility of a Director is to control the sequence of play.
 
     Attributes:
-        dice (List[Die]): A list of Die instances.
+        card1 (int): first card
+        card2 (int): Second card
         is_playing (boolean): Whether or not the game is being played.
-        score (int): The score for one round of play.
-        total_score (int): The score for the entire game.
+        score (int): game score
     """
 
     def __init__(self):
@@ -19,14 +19,12 @@ class Director:
         Args:
             self (Director): an instance of Director.
         """
-        self.dice = []
+        self.card1 = 0
+        self.card2 = 0
         self.is_playing = True
-        self.score = 0
-        self.total_score = 0
+        self.score = 300
+        #self.total_score = 0
 
-        for i in range(5):
-            die = Hilo()
-            self.dice.append(die)
 
     def start_game(self):
         """Starts the game by running the main game loop.
@@ -34,12 +32,7 @@ class Director:
         Args:
             self (Director): an instance of Director.
         """
-        print("\nRoll the dice and get points for every 1 or 5 you roll.")
-        print("50 points when you roll a 5")
-        print("100 points when you roll a 1")
-        print("The game ends when you don't roll either a 1 or 5.")
-        print("Good Luck!\n")
-
+        # loop through game while self.is_playing is true.
         while self.is_playing:
             self.get_inputs()
             self.do_updates()
@@ -51,27 +44,60 @@ class Director:
         Args:
             self (Director): An instance of Director.
         """
-        roll_dice = input("Roll dice? [y/n] ")
-        self.is_playing = (roll_dice == "y")
 
-        if roll_dice == "n":
-            print("\nGreat score. Thanks for playing!\n")
-       
+        # stop game if player chooses
+        if self.is_playing == False:
+            return
+
+        #stop game of score is 0    
+        if self.score == 0:
+            return
+
+        # Create instance of card
+        card = Cards()
+
+        # run deal to get card
+        card.Deal()
+
+        # assign card to card1
+        self.card1 = card.card
+
+        # run deal to get card
+        card.Deal()
+
+        # assign card to card2
+        self.card2 = card.card
+
+        # display current card
+        print(f"The card is: {self.card1}")
+
+        # prompt for hi or lo
+        self.high_low = input("Higher or lower? [h/l] ")
+      
     def do_updates(self):
         """Updates the player's score.
 
         Args:
             self (Director): An instance of Director.
         """
+        # stop game if player chooses
         if not self.is_playing:
+            return 
+        
+        #stop game of score is 0    
+        if self.score == 0:
+            self.is_playing = False
             return
 
-        self.score = 0
-        for i in range(len(self.dice)):
-            die = self.dice[i]
-            die.roll()
-            self.score += die.points 
-        self.total_score += self.score
+        # check cards and assign points.
+        if self.high_low == "l" and self.card2 < self.card1:
+            self.score += 100
+        elif self.high_low == "l" and self.card2 > self.card1:
+            self.score -= 75
+        elif self.high_low == "h" and self.card2 > self.card1:
+            self.score += 100
+        elif self.high_low == "h" and self.card2 < self.card1:
+            self.score -= 75
 
     def do_outputs(self):
         """Displays the dice and the score. Also asks the player if they want to roll again. 
@@ -79,17 +105,22 @@ class Director:
         Args:
             self (Director): An instance of Director.
         """
-        if not self.is_playing:
+        # stop game if player chooses
+        if self.is_playing == False:
             return
 
-        values = ""
-        for i in range(len(self.dice)):
-            die = self.dice[i]
-            values += f"{die.value} "
-
-        print(f"You rolled: {values}")
-        print(f"Your score is: {self.total_score}\n")
-        self.is_playing = (self.score > 0)
-
+        #stop game of score is 0    
         if self.score == 0:
-            print("No 1 or 5 was rolled. Game Over. Thanks for playing!\n")
+            self.is_playing = False
+            #return
+
+        # print results
+        print(f"Next card was: {self.card2}. Your score is: {self.score}")
+        
+        # prompt to play again
+        self.is_playing = input("Play again? [y/n] ")
+
+        # stop game if player chooses
+        if self.is_playing == "n":
+            self.is_playing = False
+            return
