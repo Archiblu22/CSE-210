@@ -1,4 +1,4 @@
-from game.hilo import Cards
+from game.cards import Cards
 
 
 class Director:
@@ -32,6 +32,15 @@ class Director:
         Args:
             self (Director): an instance of Director.
         """
+        # Introduce Game
+        print("\nHilo is a game in which the player guesses if the next card drawn by the dealer will be higher or lower than the previous one.\n")
+        print("You start with 300 points")
+        print("The current card is displayed and you guess if the next one is higher (h) or lower (l)")
+        print("You get 100 points if guessed correctly")
+        print("You lose 75 points if guessed incorrectly")
+        print("The game is over when you reach 0 points or choose to stop playing")
+        print("Good Luck!")
+
         # loop through game while self.is_playing is true.
         while self.is_playing:
             self.get_inputs()
@@ -45,14 +54,14 @@ class Director:
             self (Director): An instance of Director.
         """
 
+        # prompt to play again
+        play_again = input("\nPlay again? [y/n] ")
+        self.is_playing = (play_again == "y")
+
         # stop game if player chooses
-        if self.is_playing == False:
-            return
-
-        #stop game of score is 0    
-        if self.score == 0:
-            return
-
+        if play_again == "n":
+            print("\nGreat Game. Thanks for playing!\n")
+        
         # Create instance of card
         card = Cards()
 
@@ -69,10 +78,12 @@ class Director:
         self.card2 = card.card
 
         # display current card
-        print(f"The card is: {self.card1}")
+        print(f"\nThe card is: {self.card1}")
 
-        # prompt for hi or lo
+        # prompt for high or low
         self.high_low = input("Higher or lower? [h/l] ")
+        
+        
       
     def do_updates(self):
         """Updates the player's score.
@@ -84,11 +95,6 @@ class Director:
         if not self.is_playing:
             return 
         
-        #stop game of score is 0    
-        if self.score == 0:
-            self.is_playing = False
-            return
-
         # check cards and assign points.
         if self.high_low == "l" and self.card2 < self.card1:
             self.score += 100
@@ -106,21 +112,13 @@ class Director:
             self (Director): An instance of Director.
         """
         # stop game if player chooses
-        if self.is_playing == False:
+        if not self.is_playing:
             return
-
-        #stop game of score is 0    
-        if self.score == 0:
-            self.is_playing = False
-            #return
-
-        # print results
-        print(f"Next card was: {self.card2}. Your score is: {self.score}")
         
-        # prompt to play again
-        self.is_playing = input("Play again? [y/n] ")
+        # print results
+        print(f"\nNext card was: {self.card2}. Your score is: {self.score}")
+        self.is_playing = (self.score > 0)
 
-        # stop game if player chooses
-        if self.is_playing == "n":
-            self.is_playing = False
-            return
+        #stop game of score is 0
+        if self.score <= 0:
+            print("\nGame Over. Thanks for playing!\n")
